@@ -4,6 +4,8 @@ import datetime
 from score_function import getSolutionScore
 from optimized_solution import greedy_random_solution as greedy_random_solution_peaceful
 from optimized_solution_small_town import greedy_random_solution as greedy_random_solution_small_town
+from optimized_solution_suburbia import greedy_random_solution as greedy_random_solution_suburbia
+from optimized_solution_epitech import greedy_random_solution as greedy_random_solution_epitech
 
 
 def naive_solution(dataset):
@@ -47,7 +49,7 @@ def main():
         "5_isogrid",
         "6_manhattan"]
     
-    selected_dataset = datasets[1]  # 2_small_town
+    selected_dataset = datasets[3]  # 4_epitech
     time_now = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     
     input_file = './datasets/' + selected_dataset + '.json'    
@@ -61,22 +63,28 @@ def main():
     
     # Sélectionner la bonne fonction selon le dataset
     if selected_dataset == "1_peaceful_village":
-        solution = greedy_random_solution_peaceful(dataset)
+        solution_text = greedy_random_solution_peaceful(json.dumps(dataset))
     elif selected_dataset == "2_small_town":
-        solution = greedy_random_solution_small_town(dataset)
+        solution_text = greedy_random_solution_small_town(json.dumps(dataset))
+    elif selected_dataset == "3_suburbia":
+        solution_text = greedy_random_solution_suburbia(json.dumps(dataset))
+    elif selected_dataset == "4_epitech":
+        solution_text = greedy_random_solution_epitech(json.dumps(dataset))
     else:
-        solution = greedy_random_solution_peaceful(dataset)  # fallback
+        solution_text = greedy_random_solution_peaceful(json.dumps(dataset))  # fallback
     
-    print(f"Solution générée avec {len(solution['antennas'])} antennes")
+    solution = json.loads(solution_text)
+    
+    print(f"Solution générée avec {len(solution)} antennes")
     
     # Calcul du coût (optionnel, pour information)
-    cost, isValid, message = getSolutionScore(json.dumps(solution), json.dumps(dataset) )
+    cost, isValid, message = getSolutionScore(json.dumps({"antennas": solution}), json.dumps(dataset) )
     print(message)
     
     if isValid:
         output_file = f'./solutions/solution_{selected_dataset}_{cost}_{time_now}.json'
         with open(output_file, 'w') as f:
-            json.dump(solution, f, indent=2)
+            json.dump({"antennas": solution}, f, indent=2)
             print(f"Solution sauvegardée dans {output_file}")
 
 
